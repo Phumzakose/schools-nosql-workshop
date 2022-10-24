@@ -53,8 +53,7 @@ Next connect to mongodb using: `mongosh`
 
 Once in `mongosh` use the `show dbs` command to see all the databases.
 
-Switch to the schools database using `use schools`. Note your db prompt on the left should change to `schools`. The `show dbs` command will not show the database yet.
-It will only be shown once we insert data into the database.
+Switch to the schools database using `use schools`. Note your db prompt on the left should change to `schools`. The `show dbs` command will not show the `schools` database yet as it has not been created yet. It will only be shown once we insert data into the database - at which point the database will be created.
 
 ## Create the subject collection
 
