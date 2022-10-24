@@ -2,6 +2,12 @@
 
 This is an introduction session using NoSQL databases. We will be using MongoDB.
 
+**Note:** Using MongoDB is a large topic I am trying to keep this workshop quite focussed on the basics. This is a mere introduction. You can learn more [here](https://www.mongodb.com/docs/manual/introduction/) or [here](https://www.mongodb.com/docs/manual/introduction/)
+
+In fact please read [this](https://www.mongodb.com/docs/manual/introduction/) article before your proceed and watch this [YouTube video](https://www.youtube.com/watch?v=SnqPyqRh4r4) and [this one](https://www.youtube.com/watch?v=EE8ZTQxa0AM).
+
+Watch [this](https://www.youtube.com/watch?v=ORxMMo7it_Y) to learn more about SQL vs NoSQL.
+
 To get going you will need to install MongoDB using Docker.
 
 ## Installing MongoDB using docker
@@ -91,3 +97,121 @@ You can use these commands if needed:
 * `db.subject.remove({})` - to remove all subjects
 * `db.subject.remove({_id : your_id_here })` - to remove a specific subject id
 * `db.subject.find({})` - to find all subjects created
+
+## Create teachers
+
+Create at least 5 teachers in the database using the queries below.
+
+```
+db.teacher.insertOne({
+    _id : 1,
+    first_name : "Lindani",
+    last_name : "Pani",
+    email : "lindani@email.com"
+});
+```
+
+```
+db.teacher.insertOne({
+    _id : 2,
+    first_name : "Siba",
+    last_name : "Khumalo",
+    email : "siba@khumalo.com"
+});
+```
+
+See if all the teachers have been created using the `find` command.
+
+## Link teachers to subjects
+
+MongoDB is different from traditional relational databases in that it can contains array like fields in their collections. So to link subjects to teachers a teachers array can be added to the `Subject` collection to link to all the teachers that is teaching a specific subject.
+
+For example a new teacher that teaches subject 3 & 5 can be added like this:
+
+```
+db.teacher.insertOne({
+    _id : 1,
+    first_name : "Joe",
+    last_name : "Bloggs",
+    email : "joe@blogss.com",
+    subjects : [3,5]
+});
+```
+
+**Note:** MongoDB don't have foreign key constraints so you will be able to create a list of subjects even for Subject Ids that doesn't exist.
+
+To find out which subjects 3 and 5 is you can run a query like this:
+
+```
+db.subject.find({ _id : { $in : [3,5] } })
+```
+
+> **Note:** ensure you have subjects with id's of 3 & 5 for the above query to work.
+
+## Adding or removing sub collections
+
+To add a new Subject to a Teacher use this query:
+
+```
+db.teacher.updateOne(
+    { 
+        _id : 2
+    }, 
+    { "$push" : 
+        { 
+            subjects : 5
+        }
+    });
+```
+
+To remove a Subject from a Teacher use the `updateOne` query with a `$pull` command:
+
+```
+db.teacher.updateOne(
+    { 
+        _id : 2
+    }, 
+    { "$pull" : 
+        { 
+            subjects : [5] 
+        }
+    });
+```
+
+To find all the Teachers's for a given subject you can use a `find` query with `$in` and an embedded `findOne` query like this:
+
+```
+db.subject.find( {
+        _id : { 
+            $in : db.teacher.findOne( 
+                { _id: 1 }, 
+                { subjects : 1 , _id : 0  }).subjects 
+            } 
+        });
+```
+
+## The data model
+
+Add all the collections below.
+
+ Collections   | columns 
+-----------|---------------------
+ grade    | id, name
+ school   | id, name, region
+ teacher  | id, first_name, last_name, email
+ subject  | id, name
+ learner  | id, first_name, last_name, email, grade_id
+ 
+Ensure:
+
+* Teachers can be linked to a school
+* A learner can be linked to a grade
+* A school is linked to all learners in the school
+
+Write queries:
+
+* that can count how many learners there are in a given schools
+* that find all the learners in a given grade
+* that find all the learners for a given school
+* that link teachers to a Subject 
+* find all the teachers for a given subject
