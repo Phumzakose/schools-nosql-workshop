@@ -1,0 +1,40 @@
+// To count how many learners there are in a given schools.
+db.learner
+  .find({
+    _id: {
+      $in: db.schools.findOne(
+        { name: "Goodwood College" },
+        { learners: 1, _id: 0 }
+      ).learners,
+    },
+  })
+  .count();
+
+// And if you have linked the schools to the learners
+db.learner.find({ school: [3] }).count();
+// To find all the learners in a given grade
+db.learner.find({ grade_id: 2 });
+//To find all the learners for a given school
+db.learner.find({
+  _id: {
+    $in: db.schools.findOne(
+      { name: "Goodwood College" },
+      { learners: 1, _id: 0 }
+    ).learners,
+  },
+});
+// And if you have linked the schools to the learners
+db.learner.find({ school: [3] });
+//To link teachers to a Subject
+db.teacher.updateOne(
+  {
+    _id: 2,
+  },
+  {
+    $push: {
+      subjects: [4],
+    },
+  }
+);
+//find all the teachers for a given subject
+db.teacher.find({ subjects: 2 });
